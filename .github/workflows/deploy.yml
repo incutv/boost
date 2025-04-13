@@ -45,12 +45,16 @@ jobs:
       # 7. Elastic Beanstalk에 배포
       - name: Deploy to Elastic Beanstalk
         run: |
+          VERSION_LABEL=v-$(date +%Y%m%d%H%M%S)  # 💡 유니크한 시간 기반 버전 생성
+
+          echo "Using version label: $VERSION_LABEL"
+
           aws elasticbeanstalk create-application-version \
             --application-name incu-server \
-            --version-label v-${{ github.run_number }} \
+            --version-label $VERSION_LABEL \
             --source-bundle S3Bucket=elasticbeanstalk-ap-northeast-2-940482449155,S3Key=app-deployments/application.zip \
             --auto-create-application
 
           aws elasticbeanstalk update-environment \
             --environment-name Incu-server-env \
-            --version-label v-${{ github.run_number }}
+            --version-label $VERSION_LABEL
