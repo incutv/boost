@@ -12,4 +12,9 @@ public class DemoController {
     public ResponseEntity<String> getAllPayments() {
         return ResponseEntity.ok("demo");
     }
+
+    @GetMapping("/1")
+    public ResponseEntity<String> demo1() {
+        return ResponseEntity.ok("demo1");
+    }
 }
