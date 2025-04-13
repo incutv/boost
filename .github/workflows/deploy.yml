@@ -35,7 +35,9 @@ jobs:
 
       # 5. 빌드된 JAR 파일 압축
       - name: Zip application
-        run: zip -r application.zip build/libs/*.jar
+        run: |
+          cp build/libs/*.jar application.jar
+          zip application.zip application.jar
 
       # 6. S3에 업로드 (Elastic Beanstalk에서 사용할 파일)
       - name: Upload to S3
