@@ -3,7 +3,8 @@ name: Build and Deploy Spring Boot Application3
 on:
   push:
     branches:
-      - main  # main 브랜치에 push가 발생하면 실행
+      - main
+  workflow_dispatch:  # ✅ 수동 실행 허용
 
 jobs:
   build-and-deploy:
