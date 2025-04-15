@@ -40,10 +40,11 @@ jobs:
       # 5. 빌드된 JAR 파일 압축
       - name: Zip application
         run: |
-         JAR_FILE=$(ls build/libs/*.jar | head -n 1)
-         echo "Using JAR: $JAR_FILE"
-         cp "$JAR_FILE" application.jar
-         zip application.zip application.jar
+          JAR_FILE=$(ls build/libs/*.jar | grep -v 'plain.jar' | head -n 1)
+          echo "Using JAR: $JAR_FILE"
+          cp "$JAR_FILE" application.jar
+          zip application.zip application.jar
+      
       
 
       # 6. S3에 업로드 (Elastic Beanstalk에서 사용할 파일)
