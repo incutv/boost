@@ -33,11 +33,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2  # 원하는 AWS 리전 설정
 
+      # 4. 빌드된 JAR 확인
+      - name: List JAR files
+        run: ls -al build/libs
+
       # 5. 빌드된 JAR 파일 압축
       - name: Zip application
         run: |
-          cp build/libs/*.jar application.jar
-          zip application.zip application.jar
+         JAR_FILE=$(ls build/libs/*.jar | head -n 1)
+         echo "Using JAR: $JAR_FILE"
+         cp "$JAR_FILE" application.jar
+         zip application.zip application.jar
+      
 
       # 6. S3에 업로드 (Elastic Beanstalk에서 사용할 파일)
       - name: Upload to S3
