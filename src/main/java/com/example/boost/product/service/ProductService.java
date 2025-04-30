@@ -7,8 +7,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -32,22 +32,25 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public List<Product> getBestProduct() {
+    public List<Product> getBestProductOriginal() {
         List<Product> cachedProducts = (List<Product>) redisTemplate.opsForValue().get(BEST_PRODUCTS_CACHE_KEY);
         if (cachedProducts != null) {
             return cachedProducts;
         }
 
-        List<Product> products = productRepository.findAll();
-
-        List<Product> bestProducts = products.stream()
-                .sorted((p1, p2) -> p2.getLikes().compareTo(p1.getLikes()))
-                .limit(10)
-                .collect(Collectors.toList());
+        List<Product> bestProducts = loadBestProductsFromDb();
 
         // TTL 10초로 캐시 저장
-        redisTemplate.opsForValue().set(BEST_PRODUCTS_CACHE_KEY, bestProducts, Duration.ofSeconds(10));
+        redisTemplate.opsForValue().set(BEST_PRODUCTS_CACHE_KEY, bestProducts, Duration.ofSeconds(30));
 
         return bestProducts;
     }
+
+
+    private List<Product> loadBestProductsFromDb() {
+        return productRepository.findTop10ByStatusAndCreatedAtAfterOrderByLikesDesc(
+                "AVAILABLE", LocalDateTime.now().minusMonths(3));
+    }
+
+
 }
